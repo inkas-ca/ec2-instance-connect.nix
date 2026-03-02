@@ -6,6 +6,7 @@
   coreutils,
   openssl,
   curl,
+  gnugrep,
 }:
 
 stdenvNoCC.mkDerivation rec {
@@ -45,6 +46,7 @@ stdenvNoCC.mkDerivation rec {
           coreutils
           openssl
           curl
+          gnugrep
         ]
       }
     done
