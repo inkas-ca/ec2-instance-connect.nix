@@ -4,6 +4,7 @@
   fetchFromGitHub,
   makeWrapper,
   coreutils,
+  openssl,
 }:
 
 stdenvNoCC.mkDerivation rec {
@@ -38,7 +39,12 @@ stdenvNoCC.mkDerivation rec {
 
   postFixup = ''
     for f in $out/bin/*; do
-      wrapProgram $f --prefix PATH : ${lib.makeBinPath [ coreutils ]}
+      wrapProgram $f --prefix PATH : ${
+        lib.makeBinPath [
+          coreutils
+          openssl
+        ]
+      }
     done
   '';
 
