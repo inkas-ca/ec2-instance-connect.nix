@@ -7,6 +7,8 @@
   openssl,
   curl,
   gnugrep,
+  gnused,
+  logger,
 }:
 
 stdenvNoCC.mkDerivation rec {
@@ -47,6 +49,8 @@ stdenvNoCC.mkDerivation rec {
           openssl
           curl
           gnugrep
+          gnused
+          logger
         ]
       }
     done
