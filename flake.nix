@@ -26,7 +26,7 @@
 
       overlays = rec {
         ec2-instance-connect = final: _prev: {
-          ec2-instance-connect = self.packages.${final.system}.ec2-instance-connect;
+          ec2-instance-connect = self.packages.${final.stdenv.hostPlatform.system}.ec2-instance-connect;
         };
         default = ec2-instance-connect;
       };
