@@ -11,8 +11,25 @@
   logger,
   gawk,
   findutils,
+  runCommand,
+  cacert,
 }:
 
+let
+  amazon-ca-bundle = runCommand "amazon-ca-bundle" { } ''
+    mkdir -p $out/etc/ssl/certs
+    awk '
+      BEGIN { keep=0 }
+      /Amazon Root CA [0-9]+/ { keep=1 }
+      /END CERTIFICATE/ {
+        if (keep) print
+        keep=0
+        next
+      }
+      keep { print }
+    ' ${cacert}/etc/ssl/certs/ca-bundle.crt > $out/etc/ssl/certs/amazon-ca-bundle.crt
+  '';
+in
 stdenvNoCC.mkDerivation rec {
   pname = "ec2-instance-connect";
   version = "1.1.17";
@@ -44,6 +61,8 @@ stdenvNoCC.mkDerivation rec {
   '';
 
   postFixup = ''
+    substituteInPlace $out/bin/eic_curl_authorized_keys --replace-fail 'ca_path=/etc/ssl/certs' 'ca_path=${amazon-ca-bundle}/etc/ssl/certs/amazon-ca-bundle.crt'
+
     for f in $out/bin/*; do
       wrapProgram $f --prefix PATH : ${
         lib.makeBinPath [
