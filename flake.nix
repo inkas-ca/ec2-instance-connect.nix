@@ -10,30 +10,32 @@
         "x86_64-linux"
         "aarch64-linux"
       ];
-      forEachSupportedSystem =
-        f:
-        nixpkgs.lib.genAttrs supportedSystems (
-          system:
-          f {
-            pkgs = import nixpkgs { inherit system; };
-          }
-        );
+      forEachSupportedSystem = f: nixpkgs.lib.genAttrs supportedSystems (system: f system);
     in
     {
       packages = forEachSupportedSystem (
-        { pkgs }:
+        system:
+        let
+          pkgs = nixpkgs.legacyPackages.${system};
+        in
         rec {
           ec2-instance-connect = pkgs.callPackage ./package.nix { };
           default = ec2-instance-connect;
         }
       );
 
+      overlays = rec {
+        ec2-instance-connect = final: _prev: {
+          ec2-instance-connect = self.packages.${final.system}.ec2-instance-connect;
+        };
+        default = ec2-instance-connect;
+      };
+
       nixosModules = rec {
-        ec2-instance-connect =
-          { pkgs, ... }@args:
-          import ./module.nix {
-            ec2-instance-connect = self.packages.${pkgs.system}.ec2-instance-connect;
-          } args;
+        ec2-instance-connect = {
+          nixpkgs.overlays = [ self.overlays.default ];
+          imports = [ ./module.nix ];
+        };
         default = ec2-instance-connect;
       };
     };

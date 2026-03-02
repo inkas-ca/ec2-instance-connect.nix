@@ -1,5 +1,5 @@
-{ ec2-instance-connect }:
 {
+  pkgs,
   config,
   lib,
   ...
@@ -14,8 +14,8 @@
 
     package = lib.mkOption {
       type = lib.types.package;
-      default = ec2-instance-connect;
-      defaultText = lib.literalExpression "ec2-instance-connect";
+      default = pkgs.ec2-instance-connect;
+      defaultText = lib.literalExpression "pkgs.ec2-instance-connect";
       description = "EC2 Instance Connect package to use.";
     };
 
