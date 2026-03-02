@@ -44,11 +44,9 @@ stdenvNoCC.mkDerivation rec {
   nativeBuildInputs = [ makeWrapper ];
 
   postPatch = ''
-    # Dump /bin, /usr/bin, etc from binary paths names since we want to use $PATH on Ubuntu/etc
     sed -i "s%/usr/bin/%%g" src/bin/*
     sed -i "s%^/bin/%%g" src/bin/*
     sed -i "s%\([^\#][^\!]\)/bin/%\1%g" src/bin/*
-    patchShebangs src/bin/*
   '';
 
   installPhase = ''
