@@ -29,6 +29,6 @@ stdenvNoCC.mkDerivation rec {
     license = licenses.asl20;
     platforms = platforms.linux;
     maintainers = with maintainers; [ samuel-martineau ];
-    mainProgram = "eic_get_authorized_keys";
+    mainProgram = "eic_run_authorized_keys";
   };
 }
