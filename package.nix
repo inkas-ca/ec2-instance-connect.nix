@@ -5,6 +5,7 @@
   makeWrapper,
   coreutils,
   openssl,
+  curl,
 }:
 
 stdenvNoCC.mkDerivation rec {
@@ -43,6 +44,7 @@ stdenvNoCC.mkDerivation rec {
         lib.makeBinPath [
           coreutils
           openssl
+          curl
         ]
       }
     done
