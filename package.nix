@@ -10,6 +10,7 @@
   gnused,
   logger,
   gawk,
+  findutils,
 }:
 
 stdenvNoCC.mkDerivation rec {
@@ -51,8 +52,9 @@ stdenvNoCC.mkDerivation rec {
           curl
           gnugrep
           gnused
-          gawk
           logger
+          gawk
+          findutils
         ]
       }
     done
