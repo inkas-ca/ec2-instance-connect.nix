@@ -5,7 +5,7 @@
   ...
 }:
 {
-  options.ec2-instance-connect = {
+  options.services.ec2-instance-connect = {
     enable = lib.mkOption {
       type = lib.types.bool;
       default = false;
@@ -32,20 +32,24 @@
     };
   };
 
-  config = lib.mkIf config.ec2-instance-connect.enable {
-    services.openssh = {
-      authorizedKeysCommand = "${lib.getExe config.ec2-instance-connect.package} %u %f";
-      authorizedKeysCommandUser = config.ec2-instance-connect.user;
-    };
+  config =
+    let
+      cfg = config.services.ec2-instance-connect;
+    in
+    lib.mkIf cfg.enable {
+      services.openssh = {
+        authorizedKeysCommand = "${lib.getExe cfg.package} %u %f";
+        authorizedKeysCommandUser = cfg.user;
+      };
 
-    users = {
-      groups."${config.ec2-instance-connect.group}" = { };
+      users = {
+        groups."${cfg.group}" = { };
 
-      users."${config.ec2-instance-connect.user}" = {
-        isSystemUser = true;
-        description = "User for EC2 Instance Connect";
-        group = config.ec2-instance-connect.group;
+        users."${cfg.user}" = {
+          isSystemUser = true;
+          description = "User for EC2 Instance Connect";
+          group = cfg.group;
+        };
       };
     };
-  };
 }
