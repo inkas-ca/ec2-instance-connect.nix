@@ -2,6 +2,8 @@
   stdenvNoCC,
   lib,
   fetchFromGitHub,
+  makeWrapper,
+  coreutils,
 }:
 
 stdenvNoCC.mkDerivation rec {
@@ -15,6 +17,16 @@ stdenvNoCC.mkDerivation rec {
     sha256 = "XXrVcmgsYFOj/1cD45ulFry5gY7XOkyhmDV7yXvgNhI=";
   };
 
+  nativeBuildInputs = [ makeWrapper ];
+
+  postPatch = ''
+    # Dump /bin, /usr/bin, etc from binary paths names since we want to use $PATH on Ubuntu/etc
+    sed -i "s%/usr/bin/%%g" src/bin/*
+    sed -i "s%^/bin/%%g" src/bin/*
+    sed -i "s%\([^\#][^\!]\)/bin/%\1%g" src/bin/*
+    patchShebangs src/bin/*
+  '';
+
   installPhase = ''
     runHook preInstall
 
@@ -22,6 +34,12 @@ stdenvNoCC.mkDerivation rec {
     cp -r src/bin $out
 
     runHook postInstall
+  '';
+
+  postFixup = ''
+    for f in $out/bin/*; do
+      wrapProgram $f --prefix PATH : ${lib.makeBinPath [ coreutils ]}
+    done
   '';
 
   meta = with lib; {
