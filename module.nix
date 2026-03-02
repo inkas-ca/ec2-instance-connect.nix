@@ -37,8 +37,16 @@
       cfg = config.services.ec2-instance-connect;
     in
     lib.mkIf cfg.enable {
+      environment.etc."ssh/authorized_keys_command" = {
+        mode = "0555";
+        text = ''
+          #!/bin/sh
+          exec ${lib.getExe cfg.package} "$@"
+        '';
+      };
+
       services.openssh = {
-        authorizedKeysCommand = "${lib.getExe cfg.package} %u %f";
+        authorizedKeysCommand = "/etc/ssh/authorized_keys_command %u %f";
         authorizedKeysCommandUser = cfg.user;
       };
 
